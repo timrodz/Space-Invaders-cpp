@@ -13,6 +13,10 @@
 // This Include
 #include "Level.h"
 
+// Constants
+#define ALIEN_COLUMNS 10
+#define ALIEN_ROWS 5
+
 // Static Variables
 
 // Static Function Prototypes
@@ -53,23 +57,19 @@ CLevel::~CLevel() {
 
 }
 
-bool
-CLevel::Initialise(int _iWidth, int _iHeight) {
+bool CLevel::Initialise(int _iWidth, int _iHeight) {
 
 	m_iWidth = _iWidth;
 	m_iHeight = _iHeight;
 
 	const float fBulletVelX = 0.0f;
-	const float fBulletVelY = 275.0f;
+	const float fBulletVelY = 375.0f;
 
 	m_pBackground = new CBackGround();
 	VALIDATE(m_pBackground->Initialise());
 	//Set the background position to start from {0,0}
 	m_pBackground->SetX((float)m_iWidth / 2);
 	m_pBackground->SetY((float)m_iHeight / 2);
-
-	//m_pBullet = new CBullet();
-	//VALIDATE(m_pBullet->Initialise(m_iWidth / 2.0f, m_iHeight / 2.0f, fBulletVelX, fBulletVelY));
 
 	m_pPlayer = new CPlayer();
 	VALIDATE(m_pPlayer->Initialise());
@@ -80,40 +80,49 @@ CLevel::Initialise(int _iWidth, int _iHeight) {
 	m_pPlayer->SetY(_iHeight - (1.5f * m_pPlayer->GetHeight() / 2));
 
 	const int kiNumAliens = 55;
-	const int kiStartX = _iWidth / 6 - 15;
+	const int kiStartX = _iWidth / 6 - 35 + ALIEN_COLUMNS;
 	const int kiGap = 5;
 
 	int iCurrentX = kiStartX;
-	int iCurrentY = 40;
+	int iCurrentY;
 
-	for (int i = 0; i < kiNumAliens; ++i) {
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
-		CAlien* pBrick = new CAlien();
-		VALIDATE(pBrick->Initialise());
+		iCurrentY = 40;
 
-		pBrick->SetX(static_cast<float>(iCurrentX));
-		pBrick->SetY(static_cast<float>(iCurrentY));
+		for (int j = 0; j < ALIEN_ROWS; j++) {
 
-		iCurrentX += static_cast<int>(pBrick->GetWidth()) + kiGap;
+			CAlien* pAlien = new CAlien();
+			VALIDATE(pAlien->Initialise());
 
-		if (iCurrentX > (_iWidth / 2 + _iWidth / 4 + _iWidth / 6)) {
-			iCurrentX = kiStartX;
+			pAlien->SetX(static_cast<float>(iCurrentX));
+			pAlien->SetY(static_cast<float>(iCurrentY));
+
 			iCurrentY += 50;
+
+			m_aliens[i].push_back(pAlien);
+
 		}
 
-		m_vecAliens.push_back(pBrick);
+		iCurrentX += static_cast<int>(12 * kiGap);
+
+		if (iCurrentX > (_iWidth / 2 + _iWidth / 4 + _iWidth / 6)) {
+
+			iCurrentX = kiStartX;
+			iCurrentY += 50;
+
+		}
 
 	}
 
-	SetAliensRemaining(kiNumAliens);
+	SetAliensRemaining(ALIEN_COLUMNS * ALIEN_ROWS);
 	m_fpsCounter = new CFPSCounter();
 	VALIDATE(m_fpsCounter->Initialise());
 
 	return (true);
 }
 
-void
-CLevel::Draw() {
+void CLevel::Draw() {
 
 	m_pBackground->Draw();
 
@@ -123,111 +132,119 @@ CLevel::Draw() {
 		m_vecPlayerBullets[i]->Draw();
 	}
 
-	for (unsigned int i = 0; i < m_vecAliens.size(); ++i) {
-		m_vecAliens[i]->Draw();
-	}
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
-	//m_pBullet->Draw();
+		for (int j = 0; j < ALIEN_ROWS; j++) {
+
+			m_aliens[i].at(j)->Draw();
+
+		}
+
+	}
 
 	DrawScore();
 	DrawFPS();
 
 }
 
-void
-CLevel::Process(float _fDeltaTick) {
+void CLevel::Process(float _fDeltaTick) {
 
 	m_pBackground->Process(_fDeltaTick);
-	//m_pBullet->Process(_fDeltaTick);
 	m_pPlayer->Process(_fDeltaTick);
+
+	ProcessBulletEdgeCollision();
 	ProcessBulletAlienCollision();
-	ProcessBallWallCollision();
-	//ProcessPaddleWallCollison();
-	//ProcessBallPaddleCollision();
-	//ProcessBallBrickCollision();
+	ProcessBulletPlayerCollision();
 
 	ProcessCheckForWin();
-	//ProcessBallBounds();
 
 	for (unsigned int i = 0; i < m_vecPlayerBullets.size(); ++i) {
 		m_vecPlayerBullets[i]->Process(_fDeltaTick);
 	}
 
-	for (unsigned int i = 0; i < m_vecAliens.size(); ++i) {
-		m_vecAliens[i]->Process(_fDeltaTick);
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+		for (int j = 0; j < ALIEN_ROWS; j++) {
+
+			m_aliens[i].at(j)->Process(_fDeltaTick);
+
+		}
+
+		if (m_aliens[i].back() != nullptr)
+			m_aliens[i].back()->SetCanShoot();
+
 	}
 
 	m_fpsCounter->CountFramesPerSecond(_fDeltaTick);
 
 }
 
-CPlayer*
-CLevel::GetPaddle() const {
+CPlayer* CLevel::GetPlayer() const {
+
 	return (m_pPlayer);
+
 }
 
-void
-CLevel::ProcessBallWallCollision() {
+void CLevel::SetAlienShipSpeed(float _fSpeed) {
 
-	for (unsigned int i = 0; i < m_vecPlayerBullets.size(); ++i) {
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
-		float fBulletX = m_vecPlayerBullets[i]->GetX();
-		float fBulletY = m_vecPlayerBullets[i]->GetY();
-		float fBulletW = m_vecPlayerBullets[i]->GetWidth();
-		float fBulletH = m_vecPlayerBullets[i]->GetHeight();
+		for (int j = 0; j < ALIEN_ROWS; j++) {
 
-		float fHalfBulletW = fBulletW / 2;
-		float fHalfBulletH = fBulletH / 2;
+			m_aliens[i].at(j)->SetShipSpeed(_fSpeed);
 
-		/*if (fBulletX < fHalfBulletW) {
-			m_vecPlayerBullets[i]->SetVelocityX(m_vecPlayerBullets[i]->GetVelocityX() * -1);
-		}
-		else if (fBulletX > m_iWidth - fHalfBulletW) {
-			m_vecPlayerBullets[i]->SetVelocityX(m_vecPlayerBullets[i]->GetVelocityX() * -1);
-		}*/
-
-		if (fBulletY < fHalfBulletH) {
-			m_vecPlayerBullets[i]->SetVelocityY(m_vecPlayerBullets[i]->GetVelocityY() * -1);
 		}
 
 	}
 
 }
 
+void CLevel::SetAlienBulletSpeed(float _fSpeed) {
 
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
+		for (int j = 0; j < ALIEN_ROWS; j++) {
 
-void
-CLevel::ProcessBulletAlienCollision() {
+			m_aliens[i].at(j)->SetBulletSpeed(_fSpeed);
 
-	for (unsigned int i = 0; i < m_vecAliens.size(); ++i) {
+		}
 
-		if (!m_vecAliens[i]->IsHit()) {
+	}
 
-			for (unsigned int i = 0; i < m_vecPlayerBullets.size(); ++i) {
+}
 
-				float fBallR = m_vecPlayerBullets[i]->GetRadius();
+void CLevel::ProcessBulletAlienCollision() {
 
-				float fBallX = m_vecPlayerBullets[i]->GetX();
-				float fBallY = m_vecPlayerBullets[i]->GetY();
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
-				float fBrickX = m_vecAliens[i]->GetX();
-				float fBrickY = m_vecAliens[i]->GetY();
+		for (int j = 0; j < ALIEN_ROWS; j++) {
 
-				float fBrickH = m_vecAliens[i]->GetHeight();
-				float fBrickW = m_vecAliens[i]->GetWidth();
+			if (!m_aliens[i].at(j)->IsHit()) {
 
-				if ((fBallX + fBallR > fBrickX - fBrickW / 2) &&
-					(fBallX - fBallR < fBrickX + fBrickW / 2) &&
-					(fBallY + fBallR > fBrickY - fBrickH / 2) &&
-					(fBallY - fBallR < fBrickY + fBrickH / 2)) {
+				if (m_pPlayer->GetBullet() != nullptr) {
 
-					//Hit the front side of the brick...
-					m_vecPlayerBullets[i]->SetY((fBrickY + fBrickH / 2.0f) + fBallR);
-					m_vecPlayerBullets[i]->SetVelocityY(m_vecPlayerBullets[i]->GetVelocityY() * -1);
-					m_vecAliens[i]->SetHit(true);
+					float fBallR = m_pPlayer->GetBullet()->GetRadius();
 
-					SetAliensRemaining(GetAliensRemaining() - 1);
+					float fBallX = m_pPlayer->GetBullet()->GetX();
+					float fBallY = m_pPlayer->GetBullet()->GetY();
+
+					float fBrickX = m_aliens[i].at(j)->GetX();
+					float fBrickY = m_aliens[i].at(j)->GetY();
+
+					float fBrickH = m_aliens[i].at(j)->GetHeight();
+					float fBrickW =m_aliens[i].at(j)->GetWidth();
+
+					if ((fBallX + fBallR > fBrickX - fBrickW / 2) &&
+						(fBallX - fBallR < fBrickX + fBrickW / 2) &&
+						(fBallY + fBallR > fBrickY - fBrickH / 2) &&
+						(fBallY - fBallR < fBrickY + fBrickH / 2)) 
+					{
+
+						m_pPlayer->DestroyBullet();
+						m_aliens[i].at(j)->SetHit(true);
+						SetAliensRemaining(GetAliensRemaining() - 1);
+
+					}
 
 				}
 
@@ -239,105 +256,125 @@ CLevel::ProcessBulletAlienCollision() {
 
 }
 
-void
-CLevel::ProcessBulletPlayerCollision() {
+void CLevel::ProcessBulletPlayerCollision() {
 
-	for (unsigned int i = 0; i < m_vecEnemyBullets.size(); ++i) {
+	if (!m_pPlayer->IsHit()) {
 
-		float fBallR = m_vecEnemyBullets[i]->GetRadius();
+		for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
-		float fBallX = m_vecEnemyBullets[i]->GetX();
-		float fBallY = m_vecEnemyBullets[i]->GetY();
+		for (int j = 0; j < ALIEN_ROWS; j++) {
 
-		float fBrickX = m_pPlayer->GetX();
-		float fBrickY = m_pPlayer->GetY();
+			if (!m_aliens[i].at(j)->IsHit()) {
 
-		float fBrickH = m_pPlayer->GetHeight();
-		float fBrickW = m_pPlayer->GetWidth();
+				if (m_aliens[i].at(j)->GetBullet() != nullptr) {
 
-		if ((fBallX + fBallR > fBrickX - fBrickW / 2) &&
-			(fBallX - fBallR < fBrickX + fBrickW / 2) &&
-			(fBallY + fBallR > fBrickY - fBrickH / 2) &&
-			(fBallY - fBallR < fBrickY + fBrickH / 2)) {
+					float fBallR =  m_aliens[i].at(j)->GetBullet()->GetRadius();
 
-			//Hit the front side of the brick...
-			m_vecEnemyBullets[i]->SetY((fBrickY + fBrickH / 2.0f) + fBallR);
-			m_vecEnemyBullets[i]->SetVelocityY(m_vecEnemyBullets[i]->GetVelocityY() * -1);
-			//m_pPlayer->SetHit(true);
+					float fBallX =  m_aliens[i].at(j)->GetBullet()->GetX();
+					float fBallY =  m_aliens[i].at(j)->GetBullet()->GetY();
 
-			SetAliensRemaining(GetAliensRemaining() - 1);
+					float fBrickX = m_pPlayer->GetX();
+					float fBrickY = m_pPlayer->GetY();
+
+					float fBrickH = m_pPlayer->GetHeight();
+					float fBrickW = m_pPlayer->GetWidth();
+
+					if ((fBallX + fBallR > fBrickX - fBrickW / 2) &&
+						(fBallX - fBallR < fBrickX + fBrickW / 2) &&
+						(fBallY + fBallR > fBrickY - fBrickH / 2) &&
+						(fBallY - fBallR < fBrickY + fBrickH / 2)) 
+					{
+
+						m_aliens[i].at(j)->DestroyBullet();
+						m_pPlayer->SetHit(true);
+
+					}
+
+				}
+
+			}
 
 		}
+
+	}
+
 	}
 
 }
 
-void
-CLevel::ProcessCheckForWin() {
+void CLevel::ProcessBulletEdgeCollision() {
 
-	for (unsigned int i = 0; i < m_vecAliens.size(); ++i) {
-		if (!m_vecAliens[i]->IsHit()) {
-			return;
+	if (m_pPlayer->GetBullet() != nullptr) {
+
+		if (m_pPlayer->GetBullet()->GetY() < -m_pPlayer->GetBullet()->GetHeight()) {
+
+			m_pPlayer->DestroyBullet();
+
 		}
+
+	}
+
+
+
+}
+
+void CLevel::ProcessCheckForWin() {
+
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+		for (int j = 0; j < ALIEN_ROWS; j++) {
+
+			if (!m_aliens[i].at(j)->IsHit()) {
+
+				return;
+
+			}
+
+		}
+
 	}
 
 	CGame::GetInstance().GameOverWon();
-}
-
-void
-CLevel::ProcessBallBounds() {
-
-	if (m_pBullet->GetX() < 0) {
-		m_pBullet->SetX(0);
-	}
-	else if (m_pBullet->GetX() > m_iWidth) {
-		m_pBullet->SetX(static_cast<float>(m_iWidth));
-	}
-
-	if (m_pBullet->GetY() < 0) {
-		m_pBullet->SetY(0.0f);
-	}
-	else if (m_pBullet->GetY() > m_iHeight) {
-		CGame::GetInstance().GameOverLost();
-		//m_pBall->SetY(static_cast<float>(m_iHeight));
-	}
 
 }
 
-int
-CLevel::GetAliensRemaining() const {
+int CLevel::GetAliensRemaining() const {
+
 	return (m_iAliensRemaining);
+
 }
 
-void
-CLevel::SetAliensRemaining(int _i) {
+void CLevel::SetAliensRemaining(int _i) {
+
 	m_iAliensRemaining = _i;
 	UpdateScoreText();
+
 }
 
-void
-CLevel::DrawScore() {
+void CLevel::DrawScore() {
+
 	HDC hdc = CGame::GetInstance().GetBackBuffer()->GetBFDC();
 
 	const int kiX = 0;
 	const int kiY = m_iHeight - 14;
 	SetBkMode(hdc, TRANSPARENT);
 
+	SetTextColor(hdc, RGB(255, 255, 255));
 	TextOutA(hdc, kiX, kiY, m_strScore.c_str(), static_cast<int>(m_strScore.size()));
+	SetTextColor(hdc, RGB(0, 0, 0));
+
 }
 
+void CLevel::UpdateScoreText() {
 
-
-void
-CLevel::UpdateScoreText() {
-	m_strScore = "Aliens Remaining: ";
-
+	m_strScore = "SCORE: ";
 	m_strScore += ToString(GetAliensRemaining());
+
 }
 
 
-void
-CLevel::DrawFPS() {
+void CLevel::DrawFPS() {
+
 	HDC hdc = CGame::GetInstance().GetBackBuffer()->GetBFDC();
 
 	m_fpsCounter->DrawFPSText(hdc, m_iWidth, m_iHeight);

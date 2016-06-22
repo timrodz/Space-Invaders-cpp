@@ -16,31 +16,32 @@
 // Implementation
 
 CBackGround::CBackGround()
-{
-
-}
+{}
 
 CBackGround::~CBackGround()
-{
-
-}
+{}
 
 bool
-CBackGround::Initialise()
-{
+CBackGround::Initialise() {
+
 	VALIDATE(CEntity::Initialise(IDB_BACKGROUND, IDB_BACKGROUNDMASK));
 
 	return (true);
+
 }
 
 void
-CBackGround::Draw()
-{
+CBackGround::Draw() {
+
 	CEntity::Draw();
+
 }
 
 void
-CBackGround::Process(float _fDeltaTick)
-{
+CBackGround::Process(float _fDeltaTick) {
+
+	
+
 	CEntity::Process(_fDeltaTick);
+
 }

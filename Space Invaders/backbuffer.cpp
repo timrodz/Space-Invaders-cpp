@@ -18,16 +18,16 @@ CBackBuffer::CBackBuffer()
 , m_hOldObject(0)
 , m_iWidth(0)
 , m_iHeight(0)
-{
-
-}
+{}
 
 CBackBuffer::~CBackBuffer()
 {
-    SelectObject(m_hDC, m_hOldObject);
+ 
+	SelectObject(m_hDC, m_hOldObject);
 
     DeleteObject(m_hSurface);
     DeleteObject(m_hDC);
+
 }
 
 bool

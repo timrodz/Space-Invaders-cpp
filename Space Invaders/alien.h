@@ -8,7 +8,9 @@
 // Local Includes
 #include "entity.h"
 
+
 // Types
+class CBullet;
 
 // Constants
 
@@ -16,32 +18,47 @@
 
 class CAlien : public CEntity
 {
-    // Member Functions
+	// Member Functions
 public:
-    CAlien();
-    virtual ~CAlien();
+	CAlien();
+	virtual ~CAlien();
 
-    virtual bool Initialise();
+	virtual bool Initialise();
 
-    virtual void Draw();
-    virtual void Process(float _fDeltaTick);
+	virtual void Draw();
+	virtual void Process(float _fDeltaTick);
 
-    void SetHit(bool _b);
-    bool IsHit() const;
+	void DestroyBullet();
+	CBullet* GetBullet() const;
+
+	bool GetCanShoot();
+	void SetCanShoot();
+	void SetBulletReset();
+
+	void SetShipSpeed(float _fSpeed);
+
+	float GetBulletSpeed() const;
+	void SetBulletSpeed(float _fSpeed);
+
+	void SetHit(bool _b);
+	bool IsHit() const;
 
 protected:
 
 private:
-    CAlien(const CAlien& _kr);
-    CAlien& operator= (const CAlien& _kr);
+	CAlien(const CAlien& _kr);
+	CAlien& operator= (const CAlien& _kr);
 
-    // Member Variables
-public:
-
-protected:
-    bool m_bHit;
-
+	// Member Variables
 private:
+	CBullet* m_pBullet;
+	float m_fSpeed;
+	float m_fBulletSpeed;
+	bool m_bCanShoot;
+	bool m_bBulletHasBeenReset;
+	bool m_bHit;
+
+	int m_iAwardedPoints;
 
 };
 

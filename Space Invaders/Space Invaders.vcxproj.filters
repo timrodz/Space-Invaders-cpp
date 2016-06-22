@@ -106,24 +106,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Sprites\BallMask.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Sprites\BallSprite.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Sprites\BrickMask.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Sprites\BrickSprite.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Sprites\PaddleMask.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Sprites\PaddleSprite.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Sprites\Background.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -164,6 +146,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Sprites\shipPlayerRightSprite.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\BallMask.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\BallSprite.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\BrickMask.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\BrickSprite.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\PaddleMask.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\PaddleSprite.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

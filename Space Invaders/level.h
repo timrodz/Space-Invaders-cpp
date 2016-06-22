@@ -22,59 +22,69 @@ class CBackGround;
 
 class CLevel
 {
-    // Member Functions
+	// Member Functions
 public:
-    CLevel();
-    virtual ~CLevel();
+	CLevel();
+	virtual ~CLevel();
 
-    virtual bool Initialise(int _iWidth, int _iHeight);
+	virtual bool Initialise(int _iWidth, int _iHeight);
 
-    virtual void Draw();
-    virtual void Process(float _fDeltaTick);
+	virtual void Draw();
+	virtual void Process(float _fDeltaTick);
 
-    CPlayer* GetPaddle() const;
+	CPlayer* GetPlayer() const;
+	void SetAlienShipSpeed(float _fSpeed);
+	void SetAlienBulletSpeed(float _fSpeed);
 
-    int GetAliensRemaining() const;
+	int GetAliensRemaining() const;
 
 protected:
-    void ProcessBallWallCollision();
+	void ProcessBallWallCollision();
 	void ProcessPaddleWallCollison();
-    void ProcessBallPaddleCollision();
-    void ProcessBulletAlienCollision();
+	void ProcessBallPaddleCollision();
+
+	void ProcessBulletEdgeCollision();
+	void ProcessBulletAlienCollision();
 	void ProcessBulletPlayerCollision();
 
-    void ProcessCheckForWin();
+	void ProcessCheckForWin();
 
-    void ProcessBallBounds();
+	void ProcessBallBounds();
 
-    void UpdateScoreText();
-    void DrawScore();
+	void UpdateScoreText();
+	void DrawScore();
 	void DrawFPS();
 
-    void SetAliensRemaining(int _i);
+	void SetAliensRemaining(int _i);
 
 private:
-    CLevel(const CLevel& _kr);
-    CLevel& operator= (const CLevel& _kr);
+	CLevel(const CLevel& _kr);
+	CLevel& operator= (const CLevel& _kr);
 
-    // Member Variables
+	// Member Variables
 public:
 
 protected:
 	CBackGround* m_pBackground;
-    CBullet* m_pBullet;
-    CPlayer* m_pPlayer;
+	CBullet* m_pBullet;
+
+	CPlayer* m_pPlayer;
+	std::vector<CAlien*> m_aliens[11];
+	std::vector<CAlien*> m_vecAliens;
+
 	std::vector<CBullet*> m_vecPlayerBullets;
 	std::vector<CBullet*> m_vecEnemyBullets;
-    std::vector<CAlien*> m_vecAliens;
+
 	CFPSCounter* m_fpsCounter;
 
-    int m_iWidth;
-    int m_iHeight;
+	std::string m_strScore;
 
-    int m_iAliensRemaining;
+	int m_iWidth;
+	int m_iHeight;
 
-    std::string m_strScore;
+	int m_iAliensRemaining;
+
+	static int m_iPlayerLives;
 
 private:
 
