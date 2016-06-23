@@ -18,7 +18,6 @@ class CBullet;
 class CPlayer;
 class CAlien;
 class CFPSCounter;
-//class CBackGround;
 
 class CLevel
 {
@@ -82,6 +81,8 @@ protected:
 	int m_iAliensRemaining;
 
 	static int m_iPlayerLives;
+
+	int m_iLowestAlien[10];
 
 private:
 
