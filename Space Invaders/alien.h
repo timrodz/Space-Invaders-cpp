@@ -43,6 +43,9 @@ public:
 	void SetHit(bool _b);
 	bool IsHit() const;
 
+	void SetMoveLeft(bool _b);
+	void SetMoveRight(bool _b);
+
 protected:
 
 private:
@@ -57,6 +60,9 @@ private:
 	bool m_bCanShoot;
 	bool m_bBulletHasBeenReset;
 	bool m_bHit;
+	bool m_bMoveLeft;
+	bool m_bMoveRight;
+	bool m_bCurrentDirectionRight;
 
 	int m_iAwardedPoints;
 

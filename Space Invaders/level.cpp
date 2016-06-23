@@ -1,5 +1,5 @@
 // Library Includes
-
+#include <ctime>
 // Local Includes
 #include "Game.h"
 #include "player.h"
@@ -32,7 +32,10 @@ CLevel::CLevel()
 	, m_pBullet(0)
 	, m_iWidth(0)
 	, m_iHeight(0)
-	, m_fpsCounter(0) {}
+	, m_fpsCounter(0) {
+
+		m_iLowestAlien[10] = (0);
+}
 
 CLevel::~CLevel() {
 
@@ -53,12 +56,24 @@ CLevel::~CLevel() {
 	delete m_fpsCounter;
 	m_fpsCounter = 0;
 
+	delete m_pBackground;
+	m_pBackground = 0;
+
 }
 
 bool CLevel::Initialise(int _iWidth, int _iHeight) {
 
 	m_iWidth = _iWidth;
 	m_iHeight = _iHeight;
+
+	const float fBulletVelX = 0.0f;
+	const float fBulletVelY = 375.0f;
+
+	m_pBackground = new CBackGround();
+	VALIDATE(m_pBackground->Initialise());
+	//Set the background position to start from {0,0}
+	m_pBackground->SetX((float)m_iWidth / 2);
+	m_pBackground->SetY((float)m_iHeight / 2);
 
 	m_pPlayer = new CPlayer();
 	VALIDATE(m_pPlayer->Initialise());
@@ -114,7 +129,7 @@ bool CLevel::Initialise(int _iWidth, int _iHeight) {
 
 void CLevel::Draw() {
 
-	//m_pBackground->Draw();
+	m_pBackground->Draw();
 
 	m_pPlayer->Draw();
 
@@ -139,17 +154,140 @@ void CLevel::Draw() {
 
 void CLevel::Process(float _fDeltaTick) {
 
+	m_pBackground->Process(_fDeltaTick);
 	m_pPlayer->Process(_fDeltaTick);
 
 	ProcessBulletEdgeCollision();
 	ProcessBulletAlienCollision();
-	//ProcessBulletPlayerCollision();
+	ProcessBulletPlayerCollision();
 
 	ProcessCheckForWin();
+
+	// Check alien edge of screen
+	// Check if movement change needs to occur
+
+	bool bLeft = false;
+	bool bRight = false;
+
+		for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+			for (int j = 0; j < ALIEN_ROWS; j++) {
+
+				if (!m_aliens[i].at(j) -> IsHit()){
+
+					// Check if aliens need to move left
+					if (((m_aliens[i].at(j) -> GetX()) + ((m_aliens[i].at(j)-> GetWidth()) / 2)) > 740){
+					
+						bLeft = true;
+					}
+					
+
+					// Check if aliens need to move right
+					if (((m_aliens[i].at(j) -> GetX()) - ((m_aliens[i].at(j)-> GetWidth()) / 2)) < 6){
+					
+						bRight = true;
+					}
+										
+				}
+			}
+		}
+
+		// Adjust the bool variables for each alien accordingly
+
+		for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+		for (int j = 0; j < ALIEN_ROWS; j++) {
+
+			if (!m_aliens[i].at(j) -> IsHit()){
+				
+				if (bLeft == true){
+
+					m_aliens[i].at(j) -> SetMoveLeft(true);
+					m_aliens[i].at(j) -> SetMoveRight(false);
+				}
+
+				else if (bRight == true){
+
+					m_aliens[i].at(j) -> SetMoveLeft(false);
+					m_aliens[i].at(j) -> SetMoveRight(true);
+				}
+
+				else{
+					
+					m_aliens[i].at(j) -> SetMoveLeft(false);
+					m_aliens[i].at(j) -> SetMoveRight(false);
+
+				}								
+			}
+		}
+	}
 
 	for (unsigned int i = 0; i < m_vecPlayerBullets.size(); ++i) {
 		m_vecPlayerBullets[i]->Process(_fDeltaTick);
 	}
+
+
+	//for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+	//	for (int j = 0; j < ALIEN_ROWS; j++) {
+
+	//		m_aliens[i].at(j)->Process(_fDeltaTick);
+
+	//	}
+	//}
+
+	// Find lowest alien ship in each column
+
+	int count = 0;
+
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+		for (int j = 0; j < ALIEN_ROWS; j++) {
+
+			if (!m_aliens[i].at(j) -> IsHit()){
+
+				m_iLowestAlien[i] = j;
+			}
+			else
+			{
+				count++;
+			}
+
+			if (count == 5){ // Column empty
+
+				m_iLowestAlien[i] = 9;
+			}
+
+		}
+
+		count = 0;
+	}
+
+	// Set can shoot
+	for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+		if (m_iLowestAlien[i] != 9){
+
+				m_aliens[i].at(m_iLowestAlien[i])-> SetCanShoot();		
+		}		
+	}
+	
+		//srand((unsigned int)time(NULL));
+		//int x = (rand() % 10);
+
+		//if (m_aliens[x].back() != nullptr)
+		//	m_aliens[x].back()->SetCanShoot();
+
+
+		//for (int i = 0; i < ALIEN_COLUMNS; i++) {
+
+	//	for (int j = 0; j < ALIEN_ROWS; j++) {
+
+	//		m_aliens[i].at(j)->Process(_fDeltaTick);
+
+	//	}
+	//}
+
 
 	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
@@ -158,14 +296,10 @@ void CLevel::Process(float _fDeltaTick) {
 			m_aliens[i].at(j)->Process(_fDeltaTick);
 
 		}
-
-		if (m_aliens[i].back() != nullptr)
-			m_aliens[i].back()->SetCanShoot();
-
 	}
 
-	m_fpsCounter->CountFramesPerSecond(_fDeltaTick);
 
+	m_fpsCounter->CountFramesPerSecond(_fDeltaTick);		
 }
 
 void CLevel::ResetLevel() {
@@ -227,7 +361,7 @@ void CLevel::ProcessBulletAlienCollision() {
 					float fAlienY = m_aliens[i].at(j)->GetY();
 
 					float fAlienH = m_aliens[i].at(j)->GetHeight();
-					float fAlienW = m_aliens[i].at(j)->GetWidth();
+					float fAlienW =m_aliens[i].at(j)->GetWidth();
 
 					if ((fBulletX + fBulletR > fAlienX - fAlienW / 2) &&
 						(fBulletX - fBulletR < fAlienX + fAlienW / 2) &&
