@@ -65,20 +65,22 @@ CPlayer::Process(float _fDeltaTick) {
 
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
 
-			//CEntity::Initialise(IDB_SHIP_PLAYER_RIGHT_SPRITE, IDB_SHIP_PLAYER_RIGHT_MASK);
+			m_pSprite->Deinitialise();
+			m_pSprite->Initialise(IDB_SHIP_PLAYER_RIGHT_SPRITE, IDB_SHIP_PLAYER_RIGHT_MASK);
 			m_fX += m_fSpeed * _fDeltaTick;
 
 		}
 		else if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
 
-			//CEntity::Initialise(IDB_SHIP_PLAYER_LEFT_SPRITE, IDB_SHIP_PLAYER_LEFT_MASK);
+			m_pSprite->Deinitialise();
+			m_pSprite->Initialise(IDB_SHIP_PLAYER_LEFT_SPRITE, IDB_SHIP_PLAYER_LEFT_MASK);
 			m_fX -= m_fSpeed * _fDeltaTick;
 
 		}
 		else {
 
-			//if (CheckSprite(IDB_SHIP_PLAYER_SPRITE, IDB_SHIP_PLAYER_MASK))
-			//CEntity::Initialise(IDB_SHIP_PLAYER_SPRITE, IDB_SHIP_PLAYER_MASK);
+			m_pSprite->Deinitialise();
+			m_pSprite->Initialise(IDB_SHIP_PLAYER_SPRITE, IDB_SHIP_PLAYER_MASK);
 
 		}
 

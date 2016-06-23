@@ -24,6 +24,8 @@ public:
 
 	virtual bool Initialise();
 
+	void ChangeImage(int _iSpriteID);
+
 	virtual void Draw();
 	virtual void Process(float _fDeltaTick);
 

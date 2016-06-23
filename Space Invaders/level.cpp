@@ -18,6 +18,7 @@
 #define ALIEN_ROWS 5
 
 // Static Variables
+int CLevel::m_iPlayerLives = 3;
 
 // Static Function Prototypes
 
@@ -52,24 +53,12 @@ CLevel::~CLevel() {
 	delete m_fpsCounter;
 	m_fpsCounter = 0;
 
-	delete m_pBackground;
-	m_pBackground = 0;
-
 }
 
 bool CLevel::Initialise(int _iWidth, int _iHeight) {
 
 	m_iWidth = _iWidth;
 	m_iHeight = _iHeight;
-
-	const float fBulletVelX = 0.0f;
-	const float fBulletVelY = 375.0f;
-
-	m_pBackground = new CBackGround();
-	VALIDATE(m_pBackground->Initialise());
-	//Set the background position to start from {0,0}
-	m_pBackground->SetX((float)m_iWidth / 2);
-	m_pBackground->SetY((float)m_iHeight / 2);
 
 	m_pPlayer = new CPlayer();
 	VALIDATE(m_pPlayer->Initialise());
@@ -88,6 +77,7 @@ bool CLevel::Initialise(int _iWidth, int _iHeight) {
 
 	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
+		m_aliens[i].clear();
 		iCurrentY = 40;
 
 		for (int j = 0; j < ALIEN_ROWS; j++) {
@@ -124,7 +114,7 @@ bool CLevel::Initialise(int _iWidth, int _iHeight) {
 
 void CLevel::Draw() {
 
-	m_pBackground->Draw();
+	//m_pBackground->Draw();
 
 	m_pPlayer->Draw();
 
@@ -149,12 +139,11 @@ void CLevel::Draw() {
 
 void CLevel::Process(float _fDeltaTick) {
 
-	m_pBackground->Process(_fDeltaTick);
 	m_pPlayer->Process(_fDeltaTick);
 
 	ProcessBulletEdgeCollision();
 	ProcessBulletAlienCollision();
-	ProcessBulletPlayerCollision();
+	//ProcessBulletPlayerCollision();
 
 	ProcessCheckForWin();
 
@@ -179,9 +168,15 @@ void CLevel::Process(float _fDeltaTick) {
 
 }
 
-CPlayer* CLevel::GetPlayer() const {
+void CLevel::ResetLevel() {
 
-	return (m_pPlayer);
+	Initialise(m_iWidth, m_iHeight);
+
+	if (m_iPlayerLives == 0) {
+
+		CGame::GetInstance().GameOverLost();
+
+	}
 
 }
 
@@ -223,21 +218,21 @@ void CLevel::ProcessBulletAlienCollision() {
 
 				if (m_pPlayer->GetBullet() != nullptr) {
 
-					float fBallR = m_pPlayer->GetBullet()->GetRadius();
+					float fBulletR = m_pPlayer->GetBullet()->GetRadius();
 
-					float fBallX = m_pPlayer->GetBullet()->GetX();
-					float fBallY = m_pPlayer->GetBullet()->GetY();
+					float fBulletX = m_pPlayer->GetBullet()->GetX();
+					float fBulletY = m_pPlayer->GetBullet()->GetY();
 
-					float fBrickX = m_aliens[i].at(j)->GetX();
-					float fBrickY = m_aliens[i].at(j)->GetY();
+					float fAlienX = m_aliens[i].at(j)->GetX();
+					float fAlienY = m_aliens[i].at(j)->GetY();
 
-					float fBrickH = m_aliens[i].at(j)->GetHeight();
-					float fBrickW =m_aliens[i].at(j)->GetWidth();
+					float fAlienH = m_aliens[i].at(j)->GetHeight();
+					float fAlienW = m_aliens[i].at(j)->GetWidth();
 
-					if ((fBallX + fBallR > fBrickX - fBrickW / 2) &&
-						(fBallX - fBallR < fBrickX + fBrickW / 2) &&
-						(fBallY + fBallR > fBrickY - fBrickH / 2) &&
-						(fBallY - fBallR < fBrickY + fBrickH / 2)) 
+					if ((fBulletX + fBulletR > fAlienX - fAlienW / 2) &&
+						(fBulletX - fBulletR < fAlienX + fAlienW / 2) &&
+						(fBulletY + fBulletR > fAlienY - fAlienH / 2) &&
+						(fBulletY - fBulletR < fAlienY + fAlienH / 2)) 
 					{
 
 						m_pPlayer->DestroyBullet();
@@ -262,31 +257,33 @@ void CLevel::ProcessBulletPlayerCollision() {
 
 		for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
-		for (int j = 0; j < ALIEN_ROWS; j++) {
+			for (int j = 0; j < ALIEN_ROWS; j++) {
 
-			if (!m_aliens[i].at(j)->IsHit()) {
+				if (!m_aliens[i].at(j)->IsHit()) {
 
-				if (m_aliens[i].at(j)->GetBullet() != nullptr) {
+					if (m_aliens[i].at(j)->GetBullet() != nullptr) {
 
-					float fBallR =  m_aliens[i].at(j)->GetBullet()->GetRadius();
+						float fBulletR =  m_aliens[i].at(j)->GetBullet()->GetRadius();
 
-					float fBallX =  m_aliens[i].at(j)->GetBullet()->GetX();
-					float fBallY =  m_aliens[i].at(j)->GetBullet()->GetY();
+						float fBulletX =  m_aliens[i].at(j)->GetBullet()->GetX();
+						float fBulletY =  m_aliens[i].at(j)->GetBullet()->GetY();
 
-					float fBrickX = m_pPlayer->GetX();
-					float fBrickY = m_pPlayer->GetY();
+						float fPlayerX = m_pPlayer->GetX();
+						float fPlayerY = m_pPlayer->GetY();
 
-					float fBrickH = m_pPlayer->GetHeight();
-					float fBrickW = m_pPlayer->GetWidth();
+						float fPlayerH = m_pPlayer->GetHeight();
+						float fPlayerW = m_pPlayer->GetWidth();
 
-					if ((fBallX + fBallR > fBrickX - fBrickW / 2) &&
-						(fBallX - fBallR < fBrickX + fBrickW / 2) &&
-						(fBallY + fBallR > fBrickY - fBrickH / 2) &&
-						(fBallY - fBallR < fBrickY + fBrickH / 2)) 
-					{
+						if ((fBulletX + fBulletR > fPlayerX - fPlayerW / 2) &&
+							(fBulletX - fBulletR < fPlayerX + fPlayerW / 2) &&
+							(fBulletY + fBulletR > fPlayerY - fPlayerH / 2) &&
+							(fBulletY - fBulletR < fPlayerY + fPlayerH / 2)) 
+						{
 
-						m_aliens[i].at(j)->DestroyBullet();
-						m_pPlayer->SetHit(true);
+							m_aliens[i].at(j)->DestroyBullet();
+							m_pPlayer->SetHit(true);
+
+						}
 
 					}
 
@@ -295,8 +292,6 @@ void CLevel::ProcessBulletPlayerCollision() {
 			}
 
 		}
-
-	}
 
 	}
 
@@ -314,11 +309,18 @@ void CLevel::ProcessBulletEdgeCollision() {
 
 	}
 
-
-
 }
 
 void CLevel::ProcessCheckForWin() {
+
+	if (m_pPlayer->IsHit()) {
+
+		m_iPlayerLives--;
+
+		// Reset the level
+		CGame::GetInstance().GetLevel()->ResetLevel();
+
+	}
 
 	for (int i = 0; i < ALIEN_COLUMNS; i++) {
 
@@ -335,19 +337,6 @@ void CLevel::ProcessCheckForWin() {
 	}
 
 	CGame::GetInstance().GameOverWon();
-
-}
-
-int CLevel::GetAliensRemaining() const {
-
-	return (m_iAliensRemaining);
-
-}
-
-void CLevel::SetAliensRemaining(int _i) {
-
-	m_iAliensRemaining = _i;
-	UpdateScoreText();
 
 }
 
@@ -376,7 +365,25 @@ void CLevel::UpdateScoreText() {
 void CLevel::DrawFPS() {
 
 	HDC hdc = CGame::GetInstance().GetBackBuffer()->GetBFDC();
-
 	m_fpsCounter->DrawFPSText(hdc, m_iWidth, m_iHeight);
+
+}
+
+CPlayer* CLevel::GetPlayer() const {
+
+	return (m_pPlayer);
+
+}
+
+int CLevel::GetAliensRemaining() const {
+
+	return (m_iAliensRemaining);
+
+}
+
+void CLevel::SetAliensRemaining(int _i) {
+
+	m_iAliensRemaining = _i;
+	UpdateScoreText();
 
 }

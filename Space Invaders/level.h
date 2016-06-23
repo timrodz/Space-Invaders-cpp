@@ -18,7 +18,7 @@ class CBullet;
 class CPlayer;
 class CAlien;
 class CFPSCounter;
-class CBackGround;
+//class CBackGround;
 
 class CLevel
 {
@@ -32,29 +32,27 @@ public:
 	virtual void Draw();
 	virtual void Process(float _fDeltaTick);
 
-	CPlayer* GetPlayer() const;
+	
+	void ResetLevel();
 	void SetAlienShipSpeed(float _fSpeed);
 	void SetAlienBulletSpeed(float _fSpeed);
 
-	int GetAliensRemaining() const;
-
 protected:
-	void ProcessBallWallCollision();
-	void ProcessPaddleWallCollison();
-	void ProcessBallPaddleCollision();
-
 	void ProcessBulletEdgeCollision();
 	void ProcessBulletAlienCollision();
 	void ProcessBulletPlayerCollision();
 
 	void ProcessCheckForWin();
 
-	void ProcessBallBounds();
-
 	void UpdateScoreText();
 	void DrawScore();
 	void DrawFPS();
 
+public:
+	CPlayer* GetPlayer() const;
+	
+protected:
+	int GetAliensRemaining() const;
 	void SetAliensRemaining(int _i);
 
 private:
@@ -65,7 +63,6 @@ private:
 public:
 
 protected:
-	CBackGround* m_pBackground;
 	CBullet* m_pBullet;
 
 	CPlayer* m_pPlayer;

@@ -15,7 +15,7 @@ CClock::CClock()
 , m_fDeltaTime(0.0)
 , m_fLastTime(0.0)
 , m_fCurrentTime(0.0)
-, m_iFrameCount(0.0)
+, m_iFrameCount(0)
 {
 
 }

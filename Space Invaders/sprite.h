@@ -20,6 +20,7 @@ public:
     CSprite();
     ~CSprite();
 
+	virtual bool Deinitialise();
     bool Initialise(int _iResourceID, int _iMaskResourceID);
 
     void Draw();

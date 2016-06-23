@@ -63,6 +63,9 @@
     <ClCompile Include="player.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="cursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="backbuffer.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files\Framework</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cursor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -148,22 +154,22 @@
     <Image Include="Sprites\shipPlayerRightSprite.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sprites\BallMask.bmp">
+    <Image Include="Sprites\Cursor_1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sprites\BallSprite.bmp">
+    <Image Include="Sprites\Cursor_2.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sprites\BrickMask.bmp">
+    <Image Include="Sprites\Cursor_Mask.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sprites\BrickSprite.bmp">
+    <Image Include="Sprites\Menu_1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sprites\PaddleMask.bmp">
+    <Image Include="Sprites\Menu_2.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sprites\PaddleSprite.bmp">
+    <Image Include="Sprites\Credits.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -9,6 +9,8 @@
 #include "utils.h"
 #include "level.h"
 #include "player.h"
+#include "background.h"
+#include "cursor.h"
 
 // Constants
 #define WINDOW_CLASS_NAME L"BSENGGFRAMEWORK"
@@ -22,7 +24,7 @@ static int g_hCurrentPlayerBulletSpeed;
 static int g_hCurrentAlienShipSpeed;
 static int g_hCurrentAlienBulletSpeed;
 
-BOOL CALLBACK 
+BOOL CALLBACK
 DebugWindowProc(HWND _hDlg, UINT _uiMsg, WPARAM _wParam, LPARAM _lParam) {
 
 	switch (_uiMsg) {
@@ -32,57 +34,57 @@ DebugWindowProc(HWND _hDlg, UINT _uiMsg, WPARAM _wParam, LPARAM _lParam) {
 
 			switch (g_hCurrentPlayerShipSpeed) {
 
-			case -1:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_SHIP_SLOW), BST_CHECKED);
-				break;
-			case 0:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_SHIP_DEFAULT), BST_CHECKED);
-				break;
-			default:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_SHIP_FAST), BST_CHECKED);
-				break;
+				case -1:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_SHIP_SLOW), BST_CHECKED);
+					break;
+				case 0:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_SHIP_DEFAULT), BST_CHECKED);
+					break;
+				default:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_SHIP_FAST), BST_CHECKED);
+					break;
 
 			}
 
 			switch (g_hCurrentPlayerBulletSpeed) {
 
-			case -1:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_BULLET_SLOW), BST_CHECKED);
-				break;
-			case 0:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_BULLET_DEFAULT), BST_CHECKED);
-				break;
-			default:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_BULLET_FAST), BST_CHECKED);
-				break;
+				case -1:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_BULLET_SLOW), BST_CHECKED);
+					break;
+				case 0:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_BULLET_DEFAULT), BST_CHECKED);
+					break;
+				default:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_PLAYER_BULLET_FAST), BST_CHECKED);
+					break;
 
 			}
-			
+
 			switch (g_hCurrentAlienShipSpeed) {
 
-			case -1:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_SHIP_SLOW), BST_CHECKED);
-				break;
-			case 0:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_SHIP_DEFAULT), BST_CHECKED);
-				break;
-			default:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_SHIP_FAST), BST_CHECKED);
-				break;
+				case -1:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_SHIP_SLOW), BST_CHECKED);
+					break;
+				case 0:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_SHIP_DEFAULT), BST_CHECKED);
+					break;
+				default:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_SHIP_FAST), BST_CHECKED);
+					break;
 
 			}
 
 			switch (g_hCurrentAlienBulletSpeed) {
 
-			case -1:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_BULLET_SLOW), BST_CHECKED);
-				break;
-			case 0:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_BULLET_DEFAULT), BST_CHECKED);
-				break;
-			default:
-				Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_BULLET_FAST), BST_CHECKED);
-				break;
+				case -1:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_BULLET_SLOW), BST_CHECKED);
+					break;
+				case 0:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_BULLET_DEFAULT), BST_CHECKED);
+					break;
+				default:
+					Button_SetCheck(GetDlgItem(_hDlg, IDC_ALIEN_BULLET_FAST), BST_CHECKED);
+					break;
 
 			}
 
@@ -112,16 +114,16 @@ DebugWindowProc(HWND _hDlg, UINT _uiMsg, WPARAM _wParam, LPARAM _lParam) {
 
 				// Player Bullet Speed
 				case IDC_PLAYER_BULLET_SLOW:
-						g_hCurrentPlayerBulletSpeed = -1;
-						CGame::GetInstance().GetLevel()->GetPlayer()->SetBulletSpeed(550);
+					g_hCurrentPlayerBulletSpeed = -1;
+					CGame::GetInstance().GetLevel()->GetPlayer()->SetBulletSpeed(550);
 					break;
-					case IDC_PLAYER_BULLET_DEFAULT:
-						g_hCurrentPlayerBulletSpeed = 0;
-						CGame::GetInstance().GetLevel()->GetPlayer()->SetBulletSpeed(750);
+				case IDC_PLAYER_BULLET_DEFAULT:
+					g_hCurrentPlayerBulletSpeed = 0;
+					CGame::GetInstance().GetLevel()->GetPlayer()->SetBulletSpeed(750);
 					break;
-					case IDC_PLAYER_BULLET_FAST:
-						g_hCurrentPlayerBulletSpeed = 1;
-						CGame::GetInstance().GetLevel()->GetPlayer()->SetBulletSpeed(2500);
+				case IDC_PLAYER_BULLET_FAST:
+					g_hCurrentPlayerBulletSpeed = 1;
+					CGame::GetInstance().GetLevel()->GetPlayer()->SetBulletSpeed(2500);
 					break;
 
 				// Alien ship speed
@@ -141,7 +143,7 @@ DebugWindowProc(HWND _hDlg, UINT _uiMsg, WPARAM _wParam, LPARAM _lParam) {
 					// Alien bullet speed
 				case IDC_ALIEN_BULLET_SLOW:
 					g_hCurrentAlienBulletSpeed = -1;
-					
+
 					break;
 				case IDC_ALIEN_BULLET_DEFAULT:
 					g_hCurrentAlienBulletSpeed = 0;
@@ -194,17 +196,103 @@ WindowProc(HWND _hWnd, UINT _uiMsg, WPARAM _wParam, LPARAM _lParam) {
 		}
 		break;
 
+		case WM_KEYUP:
+		{
+
+			switch (WPARAM(_wParam)) {
+
+				// Change game state
+				case VK_RETURN:
+
+					if (CGame::GetInstance().GetState() == MENU) {
+
+						switch (CGame::GetInstance().GetCursor()->GetCursorChoice()) {
+
+							case 1:
+								CGame::GetInstance().SetState(PLAY);
+								CGame::GetInstance().GetBackGround()->ChangeImage(IDB_BACKGROUND);
+								break;
+							case 2:
+								CGame::GetInstance().SetState(CREDITS);
+								CGame::GetInstance().GetBackGround()->ChangeImage(IDB_CREDITS);
+								break;
+							case 3:
+								PostQuitMessage(0);
+								break;
+
+						}
+
+					}
+					else if (CGame::GetInstance().GetState() == CREDITS) {
+
+						CGame::GetInstance().SetState(MENU);
+						CGame::GetInstance().GetBackGround()->ChangeImage(IDB_MENU_1);
+
+					}
+
+					break;
+
+			}
+
+		}
+		break;
+
 		case WM_KEYDOWN:
 		{
 
 			switch (WPARAM(_wParam)) {
 
-				case VK_ESCAPE:
-				DialogBox(g_hInstance, MAKEINTRESOURCE(DEBUG_WINDOW), NULL, DebugWindowProc);
-				break;
+				//// Change game state
+				//case VK_RETURN:
 
+				//	if (CGame::GetInstance().GetState() == MENU) {
+
+				//		switch (CGame::GetInstance().GetCursor()->GetCursorChoice()) {
+
+				//			case 1:
+				//				CGame::GetInstance().SetState(PLAY);
+				//				CGame::GetInstance().GetBackGround()->ChangeImage(IDB_BACKGROUND);
+				//				break;
+				//			case 2:
+				//				CGame::GetInstance().SetState(CREDITS);
+				//				//CGame::GetInstance().GetBackGround()->ChangeImage(IDB_CREDITS);
+				//				break;
+				//			case 3:
+				//				PostQuitMessage(0);
+				//				break;
+
+				//		}
+
+				//	}
+				//	else if (CGame::GetInstance().GetState() == CREDITS) {
+
+				//		CGame::GetInstance().SetState(MENU);
+
+				//	}
+
+				//	break;
+
+				// Traversing the menu
+				case VK_UP:
+
+
+					break;
+				case VK_DOWN:
+
+
+					break;
+
+				case VK_ESCAPE:
+
+					if (CGame::GetInstance().GetState() == PLAY) {
+
+						DialogBox(g_hInstance, MAKEINTRESOURCE(DEBUG_WINDOW), NULL, DebugWindowProc);
+
+					}
+
+					break;
 			}
-			
+
 		}
 		break;
 		case WM_DESTROY:
@@ -217,7 +305,7 @@ WindowProc(HWND _hWnd, UINT _uiMsg, WPARAM _wParam, LPARAM _lParam) {
 
 		default:
 			break;
-	
+
 	}
 
 	return (DefWindowProc(_hWnd, _uiMsg, _wParam, _lParam));
@@ -278,6 +366,7 @@ CreateAndRegisterWindow(HINSTANCE _hInstance, int _iWidth, int _iHeight, const w
 
 int WINAPI
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdline, int _iCmdshow) {
+
 	MSG msg;
 	RECT _rect;
 	ZeroMemory(&msg, sizeof(MSG));
@@ -288,20 +377,24 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdline, int _i
 
 	GetClientRect(hwnd, &_rect);
 
-	//if (!rGame.Initialise(_hInstance, hwnd, kiWidth, kiHeight))
 	if (!rGame.Initialise(_hInstance, hwnd, _rect.right, _rect.bottom)) {
 		// Failed
 		return (0);
+
 	}
 
 	while (msg.message != WM_QUIT) {
 
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+
 		}
 		else {
+
 			rGame.ExecuteOneFrame();
+
 		}
 
 	}
@@ -309,4 +402,5 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdline, int _i
 	CGame::DestroyInstance();
 
 	return (static_cast<int>(msg.wParam));
+
 }

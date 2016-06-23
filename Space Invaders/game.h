@@ -16,6 +16,17 @@
 // Prototypes
 class CLevel;
 class CBackBuffer;
+class CBackGround;
+class CCursor;
+
+enum GameState {
+
+	MENU,
+	PLAY,
+	CREDITS,
+	GAMEOVER
+
+};
 
 class CGame
 {
@@ -30,6 +41,8 @@ public:
 
 	void ExecuteOneFrame();
 
+	CCursor* GetCursor();
+	CBackGround* GetBackGround();
 	CBackBuffer* GetBackBuffer();
 	CLevel* GetLevel();
 	HINSTANCE GetAppInstance();
@@ -42,6 +55,9 @@ public:
 	static CGame& GetInstance();
 	static void DestroyInstance();
 
+	void SetState(int _iState);
+	int GetState() const;
+
 protected:
 
 private:
@@ -53,6 +69,9 @@ private:
 public:
 
 protected:
+	CCursor* m_pCursor;
+
+	CBackGround* m_pBackground;
 	CClock* m_pClock;
 	CLevel* m_pLevel;
 
@@ -66,6 +85,7 @@ protected:
 	static CGame* s_pGame;
 
 private:
+	int m_iState;
 
 };
 

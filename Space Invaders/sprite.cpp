@@ -38,6 +38,15 @@ CSprite::~CSprite()
 }
 
 bool
+CSprite::Deinitialise() {
+
+	DeleteObject(m_hSprite);
+	DeleteObject(m_hMask);
+
+	return (true);
+}
+
+bool
 CSprite::Initialise(int _iSpriteResourceID, int _iMaskResourceID)
 {
     HINSTANCE hInstance = CGame::GetInstance().GetAppInstance();
